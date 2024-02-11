@@ -1,13 +1,10 @@
+import type { Instrumentation } from 'o11y/dist/modules/o11y/client/interfaces';
 import type {
     Getter,
     NearMembraneSerializedValue as SerializedValue,
     ProxyTarget,
 } from '@locker/near-membrane-shared';
 
-export interface Activity {
-    stop(data?: DataType): void;
-    error(data?: DataType): void;
-}
 export type CallableApply = (
     targetPointer: Pointer,
     thisArgPointerOrUndefined: PointerOrPrimitive,
@@ -128,7 +125,6 @@ export type Connector = (
     foreignCallableHooksCallback: HooksCallback,
     options?: HooksOptions | undefined
 ) => HooksCallback;
-export type DataType = boolean | object | number | string;
 export type DistortionCallback = (target: ProxyTarget) => ProxyTarget;
 export interface ForeignPropertyDescriptor extends PropertyDescriptor {
     foreign?: boolean;
@@ -180,11 +176,6 @@ export interface HooksOptions {
     instrumentation?: Instrumentation;
     liveTargetCallback?: LiveTargetCallback;
     revokedProxyCallback?: RevokedProxyCallback;
-}
-export interface Instrumentation {
-    startActivity(activityName: string, data?: DataType): Activity;
-    log(data?: DataType): void;
-    error(data?: DataType): void;
 }
 export type LiveTargetCallback = (target: ProxyTarget, targetTraits: number) => boolean;
 export type Pointer = CallableFunction;

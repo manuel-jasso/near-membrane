@@ -1,6 +1,6 @@
+import type { Instrumentation } from 'o11y/dist/modules/o11y/client/interfaces';
 import type {
     DistortionCallback,
-    Instrumentation,
     LiveTargetCallback,
     SignSourceCallback,
 } from '@locker/near-membrane-base';
