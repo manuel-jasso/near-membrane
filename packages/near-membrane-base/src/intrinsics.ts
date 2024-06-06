@@ -28,19 +28,42 @@ import { VirtualEnvironment } from './environment';
  * can be considered equivalents (without identity discontinuity).
  */
 function getESGlobalKeys(remapTypedArrays = true) {
+    /*
+    If X can be produced by syntax, or X is a function that does not accept
+    or does not return objects, then X can be reflective (i.e. not remapped).
+
+    remapped is slower but preserves identity
+    reflective is faster but breaks identity
+
+    ESGlobalKeys is the list of reflective keys (i.e. remapped if absent)
+
+    Action items:
+    make sure fetch responses are json serializable
+    structured clone should always return blue proxies
+    the data provider does the cloning
+    "max compatibility mode" remaps almost everything, but it has performance cost
+
+    LDS question: every adaptor produces JSON compatible data? Should be YES
+
+    We need a new hook in LWS for wires to process the data and make it red before
+    giving it back to the component.
+
+    */
     const ESGlobalKeys = [
         // *** 19.1 Value Properties of the Global Object
-        'globalThis',
-        'Infinity',
-        'NaN',
-        'undefined',
+        'globalThis', // TODO: Why is this here?
+        'Infinity', // why?
+        'NaN', // why?
+        'undefined', // why?
 
         // *** 19.2 Function Properties of the Global Object
         // 'eval', // dangerous & Reflective
         'isFinite',
         'isNaN',
-        'parseFloat',
-        'parseInt',
+        'parseFloat', // could be reflective
+        'parseInt', // could be reflective
+
+        // The following are string to string, so can be reflective
         'decodeURI',
         'decodeURIComponent',
         'encodeURI',
@@ -49,23 +72,45 @@ function getESGlobalKeys(remapTypedArrays = true) {
         // *** 19.3 Constructor Properties of the Global Object
         // 'AggregateError', // Reflective
         // 'Array', // Reflective
-        'BigInt',
-        'Boolean',
+        'BigInt', // TODO: We have to review this
+        'Boolean', // should be reflective?
         // 'Date', // Remapped
         // 'Error', // Reflective
         // 'EvalError', // Reflective
-        'FinalizationRegistry',
+        'FinalizationRegistry', // TODO: We have to review this
         // 'Function', // dangerous & Reflective
         // 'Map', // Remapped
         'Number',
+        /*
+        var n = 12
+        undefined
+        Number.isInteger(n)
+        true
+        Number.isInteger(Object(n))
+        false
+        Object(n) instanceof Number
+        n instanceof Number
+
+        var n = 9999999999999n;
+        debugger;
+        var o = Object(n);
+        var i = o instanceof BigInt;
+        */
+
         // 'Object', // Reflective
+
+        /*
+        var n = 9007199254740991n; // created by syntax
+        Object(n) instanceof BigInt
+        */
+
         // Allow blue `Promise` constructor to overwrite the Red one so that promises
         // created by the `Promise` constructor or APIs like `fetch` will work.
         // 'Promise', // Remapped
         // 'Proxy', // Reflective
         // 'RangeError', // Reflective
         // 'ReferenceError', // Reflective
-        'RegExp',
+        'RegExp', // TODO: Should be reflective?
         // 'Set', // Remapped
 
         'String',
