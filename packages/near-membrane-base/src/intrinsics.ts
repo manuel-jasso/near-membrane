@@ -138,6 +138,10 @@ function getESGlobalKeys(remapTypedArrays = true) {
 
     if (remapTypedArrays === false) {
         ESGlobalKeys.push(
+            'Set',
+            'Map',
+            'WeakSet',
+            'WeakMap',
             'ArrayBuffer',
             'BigInt64Array',
             'BigUint64Array',
